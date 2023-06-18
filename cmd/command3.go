@@ -8,55 +8,35 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"./config"
-
 	"github.com/spf13/cobra"
 )
 
 var command3Cmd = &cobra.Command{
 	Use:   "command3",
-	Short: "Call API for command3",
+	Short: "Make an API call and display the response",
+	Long:  `Make an API call to a publicly available API and display the response in the CLI.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		// Load API configuration from config.yaml
-		configFile := "cmd/config.yaml"
-		apiConfig, err := config.LoadConfig(configFile)
+		// Make the API call
+		response, err := http.Get("https://jsonplaceholder.typicode.com/posts/1")
 		if err != nil {
-			fmt.Printf("Failed to load config file: %v\n", err)
+			fmt.Println("Failed to make API call:", err)
 			return
 		}
+		defer response.Body.Close()
 
-		// Retrieve the API configuration for command2
-		apiInfo, ok := apiConfig.Apis["command2"]
-		if !ok {
-			fmt.Println("API configuration for command2 not found")
-			return
-		}
-
-		// Make the API call using the retrieved configuration
-		fmt.Printf("Calling command2 API: %s %s\n", apiInfo.Method, apiInfo.URL)
-		// Add your API call logic here
-
-		// Example: Making a GET request using the net/http package
-		resp, err := http.Get(apiInfo.URL)
+		// Process the API response
+		// For example, read the response body and display it
+		body, err := ioutil.ReadAll(response.Body)
 		if err != nil {
-			fmt.Printf("Failed to make API call: %v\n", err)
-			return
-		}
-		defer resp.Body.Close()
-
-		// Read the response body
-		body, err := ioutil.ReadAll(resp.Body)
-		if err != nil {
-			fmt.Printf("Failed to read response body: %v\n", err)
+			fmt.Println("Failed to read API response:", err)
 			return
 		}
 
-		// Store the API response in a variable or process it further
-		apiResponse := string(body)
-		fmt.Printf("API response: %s\n", apiResponse)
+		fmt.Println("API response:")
+		fmt.Println(string(body))
 	},
 }
 
 func init() {
-	rootCmd.AddCommand(command2Cmd)
+	rootCmd.AddCommand(command3Cmd)
 }
