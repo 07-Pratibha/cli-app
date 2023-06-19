@@ -74,3 +74,5 @@ func init() {
 	command5Cmd.MarkFlagRequired("body")
 	command5Cmd.MarkFlagRequired("userId")
 }
+
+// go-cli command5 --title "New Title" --body "New Body" --userId 123
